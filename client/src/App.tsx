@@ -1,5 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -10,11 +9,10 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   return user ? <>{children}</> : <Navigate to="/login" />;
 };
 
-const App = () => {
+function App() {
   return (
     <AuthProvider>
-      <CssBaseline />
-      <div className="min-h-screen bg-gray-50">
+      <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -23,11 +21,11 @@ const App = () => {
               <Dashboard />
             </PrivateRoute>
           } />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
-      </div>
+      </Router>
     </AuthProvider>
   );
-};
+}
 
 export default App;

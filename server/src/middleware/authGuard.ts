@@ -1,30 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface AuthRequest extends Request {
-  user?: {
-    userId: number;
-    email: string;
-  };
-}
-
-export const authGuard = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authGuard = (req: any, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
-    return res.status(401).json({ message: 'No token, authorization denied' });
+    return res.status(401).json({ message: 'No token' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: number;
-      email: string;
-    };
-
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     req.user = decoded;
     next();
   } catch (error) {
-    console.error('Auth guard error:', error);
-    res.status(401).json({ message: 'Token is not valid' });
+    res.status(401).json({ message: 'Invalid token' });
   }
 };
