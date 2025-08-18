@@ -1,16 +1,15 @@
-# Clean Authentication App
+# Simplified Authentication App
 
-A modern, clean authentication application built with React, Node.js, PostgreSQL, and Material-UI.
+A clean, minimal authentication application built with React, Node.js, PostgreSQL, and Material-UI.
 
 ## ✨ Features
 
-- **Clean Architecture**: Well-organized code with separation of concerns
-- **Type Safety**: Full TypeScript support with shared types
+- **Simplified Architecture**: Minimal code with essential functionality
+- **Type Safety**: TypeScript with inline type definitions
 - **Modern UI**: Material-UI components with Tailwind CSS for positioning
 - **Secure Authentication**: JWT tokens with bcrypt password hashing
-- **Error Handling**: Centralized error handling with consistent user feedback
-- **API Service**: Centralized API calls with interceptors
-- **Protected Routes**: Client-side route protection with loading states
+- **Native Fetch API**: No external HTTP client dependencies
+- **Protected Routes**: Client-side route protection
 
 ## 🛠 Tech Stack
 
@@ -19,7 +18,7 @@ A modern, clean authentication application built with React, Node.js, PostgreSQL
 - **Material-UI** for components
 - **Tailwind CSS** for positioning
 - **React Router** for navigation
-- **Axios** for API communication
+- **Native Fetch API** for HTTP requests
 
 ### Backend
 - **Node.js** with Express
@@ -71,12 +70,6 @@ This starts:
 │   │   │   └── Dashboard.tsx
 │   │   ├── context/          # React context
 │   │   │   └── AuthContext.tsx
-│   │   ├── services/         # API services
-│   │   │   └── api.ts
-│   │   ├── types/           # TypeScript types
-│   │   │   └── index.ts
-│   │   ├── utils/           # Utility functions
-│   │   │   └── errorHandler.ts
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   └── package.json
@@ -105,10 +98,10 @@ This starts:
 ## 🎨 Code Quality Features
 
 ### Frontend
-- **Shared Types**: Centralized TypeScript interfaces
-- **API Service**: Centralized API calls with error handling
-- **Error Handling**: Consistent error processing across components
-- **Clean Components**: Minimal, focused components with clear responsibilities
+- **Inline Types**: TypeScript interfaces defined where needed
+- **Native Fetch**: No external HTTP client dependencies
+- **Simple Error Handling**: Direct error processing in components
+- **Clean Components**: Minimal, focused components
 
 ### Backend
 - **Validation**: Input validation with express-validator
@@ -134,13 +127,13 @@ npm run build        # Build frontend for production
 npm run install-all  # Install all dependencies
 ```
 
-## 🧹 Code Cleanup Highlights
+## 🧹 Recent Simplifications
 
-- **Removed Redundancy**: Eliminated duplicate code and unnecessary abstractions
-- **Centralized Logic**: API calls, error handling, and types in dedicated modules
-- **Simplified Components**: Clean, focused components with minimal complexity
-- **Improved Type Safety**: Shared types and better TypeScript usage
-- **Better Error Handling**: Consistent error processing across the app
-- **Cleaner Structure**: Logical file organization and separation of concerns
+- **Removed Dependencies**: Eliminated axios, @emotion/styled, and other unnecessary packages
+- **Simplified Structure**: Removed utils/, types/, and services/ directories
+- **Native Fetch API**: Replaced axios with native fetch for HTTP requests
+- **Inline Types**: Moved type definitions directly into components
+- **Cleaner Components**: Removed unnecessary wrapper components and abstractions
+- **Reduced Bundle Size**: Smaller, more efficient application
 
-This codebase is now clean, maintainable, and follows modern React/Node.js best practices!
+This codebase is now minimal, maintainable, and follows modern React/Node.js best practices with zero unnecessary complexity!
