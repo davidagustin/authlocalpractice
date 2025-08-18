@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { TextField, Button, Typography, Box, Alert } from '@mui/material';
+import { TextField, Button, Typography, Box, Alert, Container, Paper } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
+import { handleApiError } from '../utils/errorHandler';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +11,6 @@ const Login = () => {
   const { login, user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
   if (user && !loading) {
     navigate('/dashboard');
     return null;
@@ -18,59 +18,61 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
     try {
       await login(email, password);
       navigate('/dashboard');
     } catch (error: any) {
-      if (error.response?.data?.errors) {
-        // Handle validation errors
-        const errorMessages = error.response.data.errors.map((err: any) => err.msg).join(', ');
-        setError(errorMessages);
-      } else {
-        setError(error.response?.data?.message || 'Login failed');
-      }
+      setError(handleApiError(error));
     }
   };
 
   return (
-    <Box className="mt-8 p-6">
-      <Typography variant="h4" className="mb-6 text-center">
-        Login
-      </Typography>
-      {error && <Alert severity="error" className="mb-4">{error}</Alert>}
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mb-4"
-          required
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mb-6"
-          required
-        />
-        <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          size="large"
-          className="mb-4"
-        >
-          Login
-        </Button>
-        <Typography className="text-center">
-          Don't have an account? <Link to="/register">Register</Link>
-        </Typography>
-      </form>
-    </Box>
+    <Container maxWidth="sm" className="mt-8">
+      <Box className="flex flex-col items-center">
+        <Paper elevation={3} className="p-6 w-full">
+          <Typography component="h1" variant="h4" align="center" gutterBottom>
+            Login
+          </Typography>
+          
+          {error && <Alert severity="error" className="mb-4">{error}</Alert>}
+          
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="normal"
+              required
+            />
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              size="large"
+              className="mt-6 mb-4"
+            >
+              Login
+            </Button>
+            <Typography align="center">
+              Don't have an account? <Link to="/register">Register</Link>
+            </Typography>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
   );
 };
 

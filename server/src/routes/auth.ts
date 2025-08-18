@@ -7,6 +7,21 @@ import { authGuard } from '../middleware/authGuard';
 
 const router = express.Router();
 
+const handleValidationErrors = (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+};
+
+const generateToken = (userId: number, email: string) => {
+  return jwt.sign(
+    { userId, email },
+    process.env.JWT_SECRET!,
+    { expiresIn: '24h' }
+  );
+};
+
 // Register route
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
@@ -14,11 +29,7 @@ router.post('/register', [
   body('name').trim().isLength({ min: 2 })
 ], async (req: Request, res: Response) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+    handleValidationErrors(req, res);
     const { email, password, name } = req.body;
 
     // Check if user already exists
@@ -31,30 +42,17 @@ router.post('/register', [
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password with salt
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Create new user
+    // Hash password and create user
+    const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = await pool.query(
-      'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
+      'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name',
       [email, hashedPassword, name]
     );
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: newUser.rows[0].id, email },
-      process.env.JWT_SECRET!,
-      { expiresIn: '24h' }
-    );
+    const token = generateToken(newUser.rows[0].id, email);
 
     res.status(201).json({
-      message: 'User created successfully',
-      user: {
-        id: newUser.rows[0].id,
-        email: newUser.rows[0].email,
-        name: newUser.rows[0].name
-      },
+      user: newUser.rows[0],
       token
     });
   } catch (error) {
@@ -69,11 +67,7 @@ router.post('/login', [
   body('password').exists()
 ], async (req: Request, res: Response) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+    handleValidationErrors(req, res);
     const { email, password } = req.body;
 
     // Find user
@@ -92,15 +86,9 @@ router.post('/login', [
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.rows[0].id, email },
-      process.env.JWT_SECRET!,
-      { expiresIn: '24h' }
-    );
+    const token = generateToken(user.rows[0].id, email);
 
     res.json({
-      message: 'Login successful',
       user: {
         id: user.rows[0].id,
         email: user.rows[0].email,
@@ -114,11 +102,11 @@ router.post('/login', [
   }
 });
 
-// Protected route - get current user
+// Get current user
 router.get('/me', authGuard, async (req: any, res: Response) => {
   try {
     const user = await pool.query(
-      'SELECT id, email, name, created_at FROM users WHERE id = $1',
+      'SELECT id, email, name FROM users WHERE id = $1',
       [req.user.userId]
     );
 
@@ -131,11 +119,6 @@ router.get('/me', authGuard, async (req: any, res: Response) => {
     console.error('Get user error:', error);
     res.status(500).json({ message: 'Server error' });
   }
-});
-
-// Logout route (client-side token removal)
-router.post('/logout', authGuard, (req, res) => {
-  res.json({ message: 'Logged out successfully' });
 });
 
 export default router;

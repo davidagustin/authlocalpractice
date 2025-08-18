@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Container, CssBaseline } from '@mui/material';
+import { CssBaseline, Box, CircularProgress } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -9,7 +9,11 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+      </Box>
+    );
   }
   
   return user ? <>{children}</> : <Navigate to="/login" />;
@@ -19,7 +23,7 @@ const App = () => {
   return (
     <AuthProvider>
       <CssBaseline />
-      <Container maxWidth="sm" className="mt-8">
+      <Box className="min-h-screen bg-gray-50">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -28,13 +32,9 @@ const App = () => {
               <Dashboard />
             </PrivateRoute>
           } />
-          <Route path="/" element={
-            <PrivateRoute>
-              <Navigate to="/dashboard" />
-            </PrivateRoute>
-          } />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
-      </Container>
+      </Box>
     </AuthProvider>
   );
 };

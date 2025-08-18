@@ -18,7 +18,7 @@ app.use('/api/auth', authRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ message: 'Server is running' });
+  res.json({ status: 'ok', message: 'Server is running' });
 });
 
 // Start server
